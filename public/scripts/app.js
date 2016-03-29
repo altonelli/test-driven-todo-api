@@ -33,6 +33,21 @@ $(document).ready(function() {
   // GET all todos on page load
   $.ajax({
     method: "GET",
+    url: "/api/todos/search",
+    data: $('search-todo').serialize(),
+    success: function onSearchSuccess(json) {
+      console.log(json);
+
+      // set `allTodos` to todo data (json.data) from API
+      searchedToDo = json;
+
+      // render all todos to view
+      render();
+    }
+  });
+
+  $.ajax({
+    method: "GET",
     url: baseUrl,
     success: function onIndexSuccess(json) {
       console.log(json);
