@@ -48,15 +48,17 @@ app.get('/api/todos/search', function search(req, res) {
    * query in the request. COMPLETE THIS ENDPOINT LAST.
    */
    var item = req.query.q;
+   console.log(item);
+   var found = [];
    todos.todos.forEach(function(el){
      for(var key in el){
-       console.log(el[key]);
-       if(el[key].includes(item)){
-         res.json(el);
+       if(el[key].toString().includes(item)){
+         found.push(el);
        }
      }
-     res.send("Sorry, no notes were found.");
    });
+   console.log(found);
+   res.json({todos: found});
 });
 
 app.get('/api/todos', function index(req, res) {
