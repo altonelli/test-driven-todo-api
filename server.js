@@ -14,11 +14,11 @@ app.use(express.static(__dirname + '/public'));
  ************/
 
 // our database is an array for now with some hardcoded values
-var todos = { todos: [
+var todos = [
   { _id: 1, task: 'Laundry', description: 'Wash clothes' },
   { _id: 2, task: 'Grocery Shopping', description: 'Buy dinner for this week' },
   { _id: 3, task: 'Homework', description: 'Make this app super awesome!' }
-]};
+];
 
 /**********
  * ROUTES *
@@ -30,6 +30,10 @@ var todos = { todos: [
 
 app.get('/', function homepage(req, res) {
   res.sendFile(__dirname + '/views/index.html');
+});
+
+app.get('/search', function homepage(req, res) {
+  res.sendFile(__dirname + '/views/search.html');
 });
 
 
@@ -48,23 +52,25 @@ app.get('/api/todos/search', function search(req, res) {
    * query in the request. COMPLETE THIS ENDPOINT LAST.
    */
    var item = req.query.q;
-   console.log(item);
    var found = [];
-   todos.todos.forEach(function(el){
+   console.log("item is: "+item);
+   todos.forEach(function(el){
      for(var key in el){
        if(el[key].toString().includes(item)){
+         console.log(el);
          found.push(el);
+         break;
        }
      }
    });
-   console.log(found);
+  //  console.log({todos: found});
    res.json({todos: found});
 });
 
 app.get('/api/todos', function index(req, res) {
   /* This endpoint responds with all of the todos
    */
-   res.json(200, todos);
+   res.json(200, {todos: todos});
 });
 
 app.post('/api/todos', function create(req, res) {
@@ -72,12 +78,11 @@ app.post('/api/todos', function create(req, res) {
    * and respond with the newly created todo.
    */
    var newToDo = {
-     _id: todos.todos.length + 1,
+     _id: todos.length + 1,
      task: req.body.task,
      description: req.body.description
    };
-  //  console.log(newToDo);
-  todos.todos.push(newToDo);
+  todos.push(newToDo);
   res.send(200, newToDo);
 });
 
@@ -85,8 +90,14 @@ app.get('/api/todos/:id', function show(req, res) {
   /* This endpoint will return a single todo with the
    * id specified in the route parameter (:id)
    */
-   var id = req.params.id - 1;
-   res.send(200, todos.todos[id]);
+   var id = parseInt(req.params.id);
+   var rightOne = null;
+   todos.forEach(function(el){
+     if(el._id === id){
+       rightOne = el;
+     }
+    });
+   res.send(200, rightOne);
 });
 
 app.put('/api/todos/:id', function update(req, res) {
@@ -94,17 +105,14 @@ app.put('/api/todos/:id', function update(req, res) {
    * id specified in the route parameter (:id) and respond
    * with the newly updated todo.
    */
-  //  console.log("in test");
    var id = req.params.id - 1;
-  //  console.log(todos.todos[id]);
    var update = {
      _id: parseInt(req.params.id),
      task: req.body.task,
      description: req.body.description
    };
-   todos.todos[id] = update;
-  //  console.log(update);
-   res.send(200, todos.todos[id]);
+   todos[id] = update;
+   res.send(200, todos[id]);
 });
 
 app.delete('/api/todos/:id', function destroy(req, res) {
@@ -112,9 +120,13 @@ app.delete('/api/todos/:id', function destroy(req, res) {
    * id specified in the route parameter (:id) and respond
    * with success.
    */
-   var id = req.params.id - 1;
-   todos.todos.splice(id,1);
-   res.send(200,todos.todos);
+   var id = parseInt(req.params.id);
+   todos.forEach(function(el,i){
+     if(el._id === id){
+       todos.splice(i,1);
+     }
+    });
+   res.send(200,todos);
 });
 
 /**********

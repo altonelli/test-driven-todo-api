@@ -15,6 +15,7 @@ $(document).ready(function() {
 
   // compile handlebars template
   var source = $('#todos-template').html();
+  console.log(source);
   var template = Handlebars.compile(source);
 
   // helper function to render all todos to view
@@ -30,26 +31,12 @@ $(document).ready(function() {
     $todosList.append(todosHtml);
   };
 
-  // GET all todos on page load
-  $.ajax({
-    method: "GET",
-    url: "/api/todos/search",
-    data: $('search-todo').serialize(),
-    success: function onSearchSuccess(json) {
-      console.log(json);
-
-      // set `allTodos` to todo data (json.data) from API
-      searchedToDo = json;
-
-      // render all todos to view
-      render();
-    }
-  });
 
   $.ajax({
     method: "GET",
     url: baseUrl,
     success: function onIndexSuccess(json) {
+      console.log("here");
       console.log(json);
 
       // set `allTodos` to todo data (json.data) from API
